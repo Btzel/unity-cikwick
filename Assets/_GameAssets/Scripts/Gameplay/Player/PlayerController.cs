@@ -123,8 +123,12 @@ public class PlayerController : MonoBehaviour
 
     private void LimitPlayerSpeed()
     {
+        // get flat velocity by getting rigibody movement velocity on x and z axis
         Vector3 flatVelocity = new Vector3(_playerRigidbody.linearVelocity.x, 0f, _playerRigidbody.linearVelocity.z);
 
+        // if flat velocity magnitude is bigger than movement speed chosen, it will generate a limited velocity 
+        // by multiplying the movement speed by flat velocity normalized and change the value of current rigidbody velocity
+        // with limited velocity x and z axis values
         if(flatVelocity.magnitude > _movementSpeed)
         {
             Vector3 limitedVelocity = flatVelocity.normalized * _movementSpeed;
