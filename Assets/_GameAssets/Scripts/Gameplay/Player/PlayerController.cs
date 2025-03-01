@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _jumpForce;
     [SerializeField] private bool _canJump;
     [SerializeField] private float _jumpCooldown;
+    [SerializeField] private float _airMultiplier;
+    [SerializeField] private float _airDrag;
 
     [Header("Slider Settings")]
     [SerializeField] private KeyCode _slideKey;
@@ -29,21 +31,23 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private float _groundDrag;
 
+    [Header("Player States")]
+    private StateController _stateController;
 
-   
-
-    
-    
     private void Awake()
     {
         // get rigidbody from the gameobject which is our script attached to, then freeze rotations on all axes
         _playerRigidbody = GetComponent<Rigidbody>();
         _playerRigidbody.freezeRotation = true;
+
+        // get state controller script
+        _stateController = GetComponent<StateController>();
     }
 
     private void Update()
     {
         SetInputs();
+        SetStates();
         SetPlayerDrag();
         LimitPlayerSpeed();
     }
@@ -78,36 +82,79 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // this state machine is not working as actual, normally state machines work such as 
+    // the movements or animations happen when state is something
+    // for example if state is idle, player will have idle features, if run it will run
+    // this state machine will work quite the opposite, when we run, the state will be run
+    // this approach is to apply state machine for educational purposes, it will be for only 
+    // to experience state based coding.
+    // normally, we create the state machine for our states, then code our actions in it and make it work before coding actions.
+    private void SetStates()
+    {
+        var movementDirection = GetMovementDirection();
+        var isGrounded = IsGrounded();
+        var isSliding = IsSliding();
+        var currentState = _stateController.GetCurrentState();
+
+        // create new state using new type of switch case structure
+        var newState = currentState switch
+        {
+            // for in if format, same purpose as -> if (movementDirection == Vector3.zero && isGrounded && !_isSliding)
+            // {newState = PlayerState.Idle} and elif and elif and so on
+            // else {newState = currentState}
+            _ when movementDirection  == Vector3.zero && isGrounded && !isSliding => PlayerState.Idle,
+            _ when movementDirection != Vector3.zero && isGrounded && !isSliding => PlayerState.Move,
+            _ when movementDirection == Vector3.zero && isGrounded && isSliding => PlayerState.SlideIdle,
+            _ when movementDirection != Vector3.zero && isGrounded && isSliding => PlayerState.Slide,
+            _ when !_canJump && !isGrounded => PlayerState.Jump,
+            _ => currentState
+
+        };
+
+        // lastly change state with new state if state is changed
+        if (newState != currentState)
+        {
+            _stateController.ChangeState(newState);
+        }
+
+        Debug.Log(newState);
+    }
     private void SetPlayerMovement()
     {
         // get looking direction from orientation object which is looking forward and create the movement direction
         _movementDirection = _orientationTransform.forward * _verticalInput +
             _orientationTransform.right * _horizontalInput;
 
-        // apply force according to the movement direction,
+        // will be used to define multipliers according to current state
+        float forceMultiplier = _stateController.GetCurrentState() switch
+        {
+            PlayerState.Move => 1f,
+            PlayerState.Slide => _slideMultiplier,
+            PlayerState.Jump => _airMultiplier,
+            _ => 1f
+        };
+
+        // apply force according to the movement direction and force multiplier,
         // ForceMode.Force is a continuous force type which can be used on continuous movement
-        if (_isSliding)
-        {
-            _playerRigidbody.AddForce(_movementDirection.normalized * _movementSpeed * _slideMultiplier, ForceMode.Force);
-        }
-        else
-        {
-            _playerRigidbody.AddForce(_movementDirection.normalized * _movementSpeed, ForceMode.Force);
-        }
-        
+        _playerRigidbody.AddForce(GetMovementDirection() * _movementSpeed * forceMultiplier, ForceMode.Force);
+
+
     }
 
     private void SetPlayerDrag()
     {
+
         // state of rigidbody drag
-        if (_isSliding)
+        _playerRigidbody.linearDamping = _stateController.GetCurrentState() switch
         {
-            _playerRigidbody.linearDamping = _slideDrag;
-        }
-        else
-        {
-            _playerRigidbody.linearDamping = _groundDrag;
-        }
+            PlayerState.Move => _groundDrag,
+            PlayerState.Slide => _slideDrag,
+            PlayerState.Jump => _airDrag,
+            _ => _playerRigidbody.linearDamping
+        };
+
+        
+        
     }
     private void SetPlayerJump()
     {
@@ -147,6 +194,16 @@ public class PlayerController : MonoBehaviour
     {
         // return the state of player is grounded or not, via sending raycast from player position through ground
         return Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f, _groundLayer);
+    }
+
+    private Vector3 GetMovementDirection()
+    {
+        return _movementDirection.normalized;
+    }
+
+    private bool IsSliding()
+    {
+        return _isSliding;
     }
 
 }
