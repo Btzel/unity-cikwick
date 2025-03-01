@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public event Action OnPlayerJump;
+
     [Header("References")]
     [SerializeField] private Transform _orientationTransform;
     private Rigidbody _playerRigidbody;
@@ -43,6 +46,7 @@ public class PlayerController : MonoBehaviour
         // get state controller script
         _stateController = GetComponent<StateController>();
     }
+
 
     private void Update()
     {
@@ -158,6 +162,7 @@ public class PlayerController : MonoBehaviour
     }
     private void SetPlayerJump()
     {
+        OnPlayerJump?.Invoke();
         // before jumping, make zero speed on y axis to avoid corruption on jumping action
         // for example if our player is falling down and has - speed on y axis, the jumping will be effected,
         // maybe not even jump or jump a little because of the - speed of y axis

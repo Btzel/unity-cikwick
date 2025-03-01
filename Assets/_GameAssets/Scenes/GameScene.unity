@@ -727,7 +727,7 @@ MonoBehaviour:
   Composition:
     ScreenPosition: {x: 0, y: 0}
     DeadZone:
-      Enabled: 1
+      Enabled: 0
       Size: {x: 0.2, y: 0.2}
     HardLimits:
       Enabled: 0
@@ -738,7 +738,7 @@ MonoBehaviour:
   Damping: {x: 1, y: 1}
   Lookahead:
     Enabled: 1
-    Time: 0.1
+    Time: 0.05
     Smoothing: 5.6
     IgnoreY: 0
 --- !u!114 &418118264
@@ -1192,6 +1192,7 @@ GameObject:
   - component: {fileID: 968435120}
   - component: {fileID: 968435123}
   - component: {fileID: 968435124}
+  - component: {fileID: 968435125}
   - component: {fileID: 968435122}
   - component: {fileID: 968435121}
   m_Layer: 0
@@ -1310,6 +1311,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea4b2f4d7e75c6e4cabcdc889eb23c6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &968435125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 968435119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8355b436ae19aa4409f7b5f84f6f6614, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerAnimator: {fileID: 5748034570751879642}
 --- !u!1 &1111940106
 GameObject:
   m_ObjectHideFlags: 0
@@ -1414,7 +1428,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.5, z: 0}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalScale: {x: 1000, y: 1, z: 1000}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2337,7 +2351,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8781832456749441669}
   m_Layer: 0
-  m_Name: root
+  m_Name: Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2352,6 +2366,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5748034570751879641}
+  - component: {fileID: 5748034570751879642}
   m_Layer: 0
   m_Name: PlayerVisual
   m_TagString: Untagged
@@ -2437,6 +2452,28 @@ Transform:
   - {fileID: 938579055}
   m_Father: {fileID: 968435120}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &5748034570751879642
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4940112685353464675}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0f4d84c15e5637f459f5b80cd4203531, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &6909311199956999236
 Transform:
   m_ObjectHideFlags: 0
