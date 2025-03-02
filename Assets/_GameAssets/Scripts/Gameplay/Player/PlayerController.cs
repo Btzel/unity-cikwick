@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _movementSpeed;
     private float _horizontalInput, _verticalInput;
     private Vector3 _movementDirection;
+    private float _startingMovementSpeed;
 
     [Header("Jump Settings")]
     [SerializeField] private KeyCode _jumpKey;
@@ -22,6 +23,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _jumpCooldown;
     [SerializeField] private float _airMultiplier;
     [SerializeField] private float _airDrag;
+    private float _startingJumpForce;
 
     [Header("Slider Settings")]
     [SerializeField] private KeyCode _slideKey;
@@ -37,6 +39,8 @@ public class PlayerController : MonoBehaviour
     [Header("Player States")]
     private StateController _stateController;
 
+    
+
     private void Awake()
     {
         // get rigidbody from the gameobject which is our script attached to, then freeze rotations on all axes
@@ -45,6 +49,9 @@ public class PlayerController : MonoBehaviour
 
         // get state controller script
         _stateController = GetComponent<StateController>();
+
+        _startingMovementSpeed = _movementSpeed;
+        _startingJumpForce = _jumpForce;
     }
 
 
@@ -149,6 +156,8 @@ public class PlayerController : MonoBehaviour
     {
 
         // state of rigidbody drag
+        // we are modifying rigidbody drag to change its resistance to applied force,
+        // more drag will slow down our player because it will need more force.
         _playerRigidbody.linearDamping = _stateController.GetCurrentState() switch
         {
             PlayerState.Move => _groundDrag,
@@ -157,8 +166,6 @@ public class PlayerController : MonoBehaviour
             _ => _playerRigidbody.linearDamping
         };
 
-        
-        
     }
     private void SetPlayerJump()
     {
@@ -195,6 +202,8 @@ public class PlayerController : MonoBehaviour
         _canJump = true;
     }
 
+    #region Helper Functions
+
     private bool IsGrounded()
     {
         // return the state of player is grounded or not, via sending raycast from player position through ground
@@ -210,5 +219,29 @@ public class PlayerController : MonoBehaviour
     {
         return _isSliding;
     }
+
+    public void SetMovementSpeed(float speed, float duration)
+    {
+        _movementSpeed += speed;
+        Invoke(nameof(ResetMovementSpeed), duration); 
+    }
+
+    private void ResetMovementSpeed()
+    {
+        _movementSpeed = _startingMovementSpeed;
+    }
+
+    public void SetJumpForce(float force,float duration)
+    {
+        _jumpForce += force;
+        Invoke(nameof(ResetJumpForce), duration);
+    }
+
+    private void ResetJumpForce()
+    {
+        _jumpForce = _startingJumpForce;
+    }
+
+    #endregion
 
 }

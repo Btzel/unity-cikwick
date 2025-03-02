@@ -27,7 +27,8 @@ public class PlayerAnimationController : MonoBehaviour
     }
 
     
-
+    // jump event function is triggered in start function ( it is recommended usage ),
+    // reset jumping bool to let it go after 0.5 sec from jumping to another state of animation (idle,move,whatever is current state now)
     private void PlayerController_OnPlayerJump()
     {
         _playerAnimator.SetBool(Consts.PlayerAnimations.IS_JUMPING, true);
@@ -38,6 +39,7 @@ public class PlayerAnimationController : MonoBehaviour
         _playerAnimator.SetBool(Consts.PlayerAnimations.IS_JUMPING, false);
     }
 
+    // setting animation bool parameters according to current state
     private void SetPlayerAnimations()
     {
         var currentState = _stateController.GetCurrentState();
